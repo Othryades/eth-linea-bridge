@@ -1,26 +1,34 @@
-import { useConnect } from "wagmi";
+import React from "react";
+import { useConnect, useDisconnect, useAccount } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 
 function ConnectButton() {
-  const { connect } = useConnect();
+  const { connect } = useConnect({
+    connector: new InjectedConnector(),
+  });
+  const { disconnect } = useDisconnect();
+  const { isConnected } = useAccount();
 
-  // Create the injected connector (e.g., MetaMask)
-  const injectedConnector = new InjectedConnector();
+  console.log("isConnected:", isConnected); // Debug connection status
 
   return (
-    <button
-      onClick={() => connect({ connector: injectedConnector })}
-      style={{
-        padding: "10px 20px",
-        backgroundColor: "#4CAF50",
-        color: "#fff",
-        border: "none",
-        borderRadius: "5px",
-        cursor: "pointer",
-      }}
-    >
-      Connect Wallet
-    </button>
+    <div>
+      {!isConnected ? (
+        <button
+          onClick={() => connect()}
+          className="button"
+        >
+          Connect Wallet
+        </button>
+      ) : (
+        <button
+          onClick={() => disconnect()}
+          className="button"
+        >
+          Disconnect Wallet
+        </button>
+      )}
+    </div>
   );
 }
 

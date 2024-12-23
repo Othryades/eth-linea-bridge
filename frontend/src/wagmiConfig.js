@@ -1,28 +1,37 @@
-import { configureChains, createClient } from 'wagmi';
-import { publicProvider } from 'wagmi/providers/public';
+import { configureChains, createClient } from "wagmi";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
-// Define the Linea Mainnet chain
+const INFURA_API_KEY = import.meta.env.VITE_INFURA_API_KEY;
+
 const lineaMainnet = {
-  id: 59144, // Chain ID for Linea
-  name: 'Linea Mainnet',
-  network: 'linea',
+  id: 59144,
+  name: "Linea Mainnet",
+  network: "linea",
   nativeCurrency: {
-    name: 'Ethereum',
-    symbol: 'ETH',
+    name: "Ethereum",
+    symbol: "ETH",
     decimals: 18,
   },
   rpcUrls: {
-    default: {
-      http: ['https://linea-mainnet.infura.io/v3/YOUR_INFURA_API_KEY'],
-    },
+    default: `https://linea-mainnet.infura.io/v3/${INFURA_API_KEY}`,
   },
   blockExplorers: {
-    default: { name: 'Lineascan', url: 'https://lineascan.build' },
+    default: { name: "Lineascan", url: "https://lineascan.build" },
   },
 };
 
-// Configure the chains and provider
-const { chains, provider } = configureChains([lineaMainnet], [publicProvider()]);
+// Use jsonRpcProvider to ensure the RPC setup is compatible
+const { chains, provider } = configureChains(
+  [lineaMainnet],
+  [
+    jsonRpcProvider({
+      rpc: (chain) =>
+        chain.id === lineaMainnet.id
+          ? { http: `https://linea-mainnet.infura.io/v3/${INFURA_API_KEY}` }
+          : null,
+    }),
+  ]
+);
 
 // Create Wagmi client
 export const config = createClient({
