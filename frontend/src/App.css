@@ -12,7 +12,7 @@
 
 .app-title {
   font-size: 2rem;
-  color: #4caf50;
+  color: #047809;
 }
 
 .app-main {
@@ -53,4 +53,82 @@ button {
 
 button:hover {
   background-color: #45a049;
+}
+
+.bridge-actions {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.bridge-actions input {
+  padding: 10px;
+  width: 70%;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.bridge-actions button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.bridge-actions button:hover {
+  background-color: #45a049;
+}
+
+.feedback {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #4caf50;
+}
+
+.feedback.error {
+  color: #ff0000;
+}
+
+.app {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  /* margin: 20px; */
+}
+.card {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+  margin-top: 20px;
+}
+
+.bridge-actions input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.bridge-actions button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.bridge-actions button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.feedback {
+  margin-top: 10px;
+  color: #ff0000;
+  font-weight: bold;
 }

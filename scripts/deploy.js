@@ -2,7 +2,9 @@ const { ethers } = require("hardhat");
 
 async function main() {
     // Replace with the correct message service address
-    const messageServiceAddress = "0x508Ca82Df566dCD1B0DE8296e70a96332cD644ec"; // Linea Mainnet
+    // const messageServiceAddress = "0x508Ca82Df566dCD1B0DE8296e70a96332cD644ec"; // Linea Mainnet
+    const messageServiceAddress = "0x971e727e956690b9957be6d51Ec16E73AcAC83A7"; // Linea Mainnet
+    
 
     console.log("Deploying Bridge contract...");
 
