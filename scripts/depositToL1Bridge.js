@@ -1,9 +1,9 @@
 const { ethers } = require("hardhat");
 
 async function main() {
-    const L1BridgeAddress = "0x2962DCDA71736e2cBAFd5939B48c64070Bc075a1";
-    const recipient = "0x4D3A61d1591f0724D23fD27c78294734980Ee891";
-    const amount = ethers.parseEther("0.0001"); // Correct way to parse 0.0001 ETH
+    const L1BridgeAddress = "0x014bB8655Ec464b26230Bd53cf002477E7C2a99d"; // Replace with your L1 Bridge address
+    const recipient = "0xdC97b9eA6CD77eeF8A803AE09152B782A327C6a8"; // Replace with your L2 wallet address
+    const amount = ethers.parseEther("0.0001"); // Adjust ETH amount as needed
 
     const L1Bridge = await ethers.getContractAt("L1Bridge", L1BridgeAddress);
     const tx = await L1Bridge.deposit(recipient, { value: amount });
