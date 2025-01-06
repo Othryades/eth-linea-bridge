@@ -1,24 +1,47 @@
 # ETH–Linea Bridge DApp
 
-A decentralized application (DApp) that enables transferring ETH from Ethereum to the Linea network using a custom proxy contract and the Linea canonical messaging service. By leveraging Linea’s faster settlement and lower fees, users can enjoy a more efficient bridging process.
+This repository contains a **decentralized application (DApp)** and an accompanying **L1Bridge** smart contract that allow users to **bridge ETH** from Ethereum (L1) to the **Linea** network (L2). Unlike a typical “proxy” pattern, this contract specifically **escrows user funds** and interacts with the **Linea canonical messaging service**, which handles cross-chain validation and finalization.
 
-## Key Components
-1.	Custom Proxy Contract:
-	- Purpose: Allows upgradeable, maintainable bridging logic without changing user-facing addresses.
-	- Why We Use It: Simplifies contract upgrades and future expansions (e.g., adding more tokens or new governance rules).
-2.	Linea Canonical Messaging Service
-	- Role: Provides a secure, standardized communication channel for cross-chain messages.
-	- Benefit: Ensures reliable message validation between Ethereum and the Linea network, enhancing security and consistency.
+---
 
-## How It Works (High-Level)
-1.	User deposits ETH on Ethereum.
-2. **Cross-Chain Messaging**  
-   After confirming the deposit, the Bridge Contract triggers a cross-chain message via the **Linea canonical messaging service**. This message includes information such as the depositor’s address and the amount deposited.
-3.	Once validated on Linea, ETH (or its wrapped equivalent) is released or minted on the Linea side.
-4.	Withdrawals operate in reverse, triggering a burn/unlock on Linea and releasing ETH on Ethereum.
+## Overview
+
+1. **L1Bridge Contract**  
+   - **Purpose**: Holds (escrows) the deposited ETH on L1 and sends cross-chain messages via the **Linea L1 Message Service**.  
+   - **Key Functions**:  
+     - `deposit(address recipient)`: Accepts ETH and calls the message service to relay bridging info to Linea.  
+     - `withdraw(address payable recipient, uint256 amount)`: Releases ETH **only** if called by the trusted Linea message service, enabling reverse withdrawals from L2.  
+
+2. **Linea Canonical Messaging Service**  
+   - Operated by the **Linea** team for secure cross-chain communication.  
+   - Receives a deposit event from `L1Bridge`, confirms it on L2, and may later call `withdraw` on L1 to release ETH back to a user.
+
+By leveraging the official **Linea** messaging infrastructure, users can take advantage of **faster settlements and lower fees** on Linea, while the **L1Bridge** contract ensures secure handling of deposits and withdrawals on Ethereum.
+
+---
+
+## Bridging Flow (High-Level)
+
+1. **Deposit**  
+   - User calls `deposit(recipient)` on the **L1Bridge** contract and sends some ETH.  
+   - The `L1Bridge` contract holds that ETH in its own balance.  
+   - In the same transaction, `L1Bridge` calls `sendMessage` on the **Linea L1 Message Service**, instructing it to process a deposit for `recipient` on L2.
+
+2. **Linea (L2) Receives Deposit**  
+   - The **Linea** service detects the deposit info and mints or credits an equivalent amount of ETH (or wrapped ETH) to `recipient` on L2 (behind the scenes).  
+
+3. **Withdraw (L2 -> L1)**  
+   - When a user withdraws from L2, the **Linea** message service eventually calls `withdraw(recipient, amount)` on the **L1Bridge**—**only** the message service can do this.  
+   - The `L1Bridge` verifies the caller is indeed the message service, then transfers the specified ETH back to the user’s address on L1.
+
+---
 
 ## Setup & Installation
-1.	Clone the Repo
+
+1. **Clone the Repo**  
+   ```bash
+   git clone git@github.com:Othryades/eth-linea-bridge.git
+   cd eth-linea-bridge
 
 2.	Install Dependencies
    ```bash
