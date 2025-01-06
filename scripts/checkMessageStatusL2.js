@@ -1,5 +1,5 @@
 const { LineaSDK } = require("@consensys/linea-sdk");
-const { ethers } = require("ethers"); // For utility functions
+const { ethers } = require("ethers");
 
 require('dotenv').config();
 
@@ -17,7 +17,8 @@ async function main() {
         mode: "read-only",
     });
 
-    const messageHash = "0x8c406ba8886c23ec157d7d4ff61a0b0fcb6d351d81899af9cb1f722c443656ab"; // The message hash you fetched
+    // The message hash you fetched
+    const messageHash = "0x8c406ba8886c23ec157d7d4ff61a0b0fcb6d351d81899af9cb1f722c443656ab"; 
     const l2Contract = sdk.getL2Contract();
 
     // Poll for the MessageClaimed event

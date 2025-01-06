@@ -3,7 +3,7 @@ const { ethers } = require("hardhat");
 async function main() {
     console.log("Deploying L1Bridge contract...");
 
-    // Sepolia Message Service address
+    // L1 Sepolia Message Service address
     const messageServiceAddress = "0xB218f8A4Bc926cF1cA7b3423c154a0D627Bdb7E5";
 
     // Get the deployer's signer

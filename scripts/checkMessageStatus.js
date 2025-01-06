@@ -27,7 +27,7 @@ async function getMessageInfo(transactionHash) {
             return;
         }
 
-        // Parse the messages and log details
+        // Parse msg and log details
         messages.forEach((message) => {
             console.log("----------------------------");
             console.log("Sender:", message.messageSender);
@@ -44,6 +44,6 @@ async function getMessageInfo(transactionHash) {
     }
 }
 
-// Replace with your L1 transaction hash
+// L1 transaction hash to check
 const transactionHash = "0xdc33908fd39c4b270a9811adeffeb2db5e5b375b77c3c57e745bffe1d931a49a";
 getMessageInfo(transactionHash);

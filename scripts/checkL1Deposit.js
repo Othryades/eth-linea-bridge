@@ -1,7 +1,8 @@
 const { ethers } = require("hardhat");
 
 async function main() {
-    const L1BridgeAddress = "0x014bB8655Ec464b26230Bd53cf002477E7C2a99d"; // Replace with your L1 Bridge address
+    // Replace with your L1 Bridge address
+    const L1BridgeAddress = "0x014bB8655Ec464b26230Bd53cf002477E7C2a99d"; 
 
     const L1Bridge = await ethers.getContractAt("L1Bridge", L1BridgeAddress);
 
