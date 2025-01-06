@@ -1,6 +1,6 @@
 # ETH–Linea Bridge DApp
 
-This repository contains a decentralized application (DApp) that enables transferring ETH from Ethereum (or another source chain) to the Linea network using a custom proxy contract and the Linea canonical messaging service. By leveraging Linea’s faster settlement and lower fees, users can enjoy a more efficient bridging process.
+A decentralized application (DApp) that enables transferring ETH from Ethereum to the Linea network using a custom proxy contract and the Linea canonical messaging service. By leveraging Linea’s faster settlement and lower fees, users can enjoy a more efficient bridging process.
 
 ## Key Components
 1.	Custom Proxy Contract:
@@ -11,8 +11,9 @@ This repository contains a decentralized application (DApp) that enables transfe
 	- Benefit: Ensures reliable message validation between Ethereum and the Linea network, enhancing security and consistency.
 
 ## How It Works (High-Level)
-1.	User deposits ETH on Ethereum (or another source chain).
-2.	The Bridge Proxy locks or escrows ETH, then emits an event via the canonical messaging service.
+1.	User deposits ETH on Ethereum.
+2. **Cross-Chain Messaging**  
+   After confirming the deposit, the Bridge Contract triggers a cross-chain message via the **Linea canonical messaging service**. This message includes information such as the depositor’s address and the amount deposited.
 3.	Once validated on Linea, ETH (or its wrapped equivalent) is released or minted on the Linea side.
 4.	Withdrawals operate in reverse, triggering a burn/unlock on Linea and releasing ETH on Ethereum.
 
