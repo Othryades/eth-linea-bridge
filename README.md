@@ -1,44 +1,53 @@
-# ETH-Linea Bridge DApp
+ETH–Linea Bridge DApp
 
-A decentralized application (DApp) for bridging ETH to the Linea network. The DApp allows users to connect their wallets, check balances, and interact with the deployed Bridge smart contract.
+This repository contains a decentralized application (DApp) that enables transferring ETH from Ethereum (or another source chain) to the Linea network using a custom proxy contract and the Linea canonical messaging service. By leveraging Linea’s faster settlement and lower fees, users can enjoy a more efficient bridging process.
 
-## Features
+Key Components
+	1.	Custom Proxy Contract
+	•	Purpose: Allows upgradeable, maintainable bridging logic without changing user-facing addresses.
+	•	Why We Use It: Simplifies contract upgrades and future expansions (e.g., adding more tokens or new governance rules).
+	2.	Linea Canonical Messaging Service
+	•	Role: Provides a secure, standardized communication channel for cross-chain messages.
+	•	Benefit: Ensures reliable message validation between Ethereum and the Linea network, enhancing security and consistency.
 
-- **Wallet Connection**: Connect/disconnect using MetaMask.
-- **Balance Display**: Displays wallet address and ETH balance.
-- **Bridge Interaction**: Allows users to deposit ETH into the Bridge contract.
+How It Works (High-Level)
+	1.	User deposits ETH on Ethereum (or another source chain).
+	2.	The Bridge Proxy locks or escrows ETH, then emits an event via the canonical messaging service.
+   3.	Once validated on Linea, ETH (or its wrapped equivalent) is released or minted on the Linea side.
+	4.	Withdrawals operate in reverse, triggering a burn/unlock on Linea and releasing ETH on Ethereum.
 
-## Tech Stack
+Setup & Installation
+	1.	Clone the Repo
 
-- **Frontend**: React with Vite
-- **Blockchain Interaction**: Wagmi and Ethers.js
-- **Smart Contracts**: Solidity (Bridge Contract deployed on Linea Mainnet)
-- **Styling**: Basic CSS
+   2.	Install Dependencies
+   npm install
+   3.	Configure Environment
+	•	Create or edit a .env file with relevant keys:
+	•	INFURA_API_KEY (or another RPC provider)
+	•	Contract addresses for the Bridge Proxy and Linea messaging service
+	•	Your deployer/admin wallet PRIVATE_KEY (if applicable)
+	4.	Run the DApp
+   npm run dev
 
-## Prerequisites
+   Access the UI at http://localhost:3000.
 
-- **Node.js**: v16 or higher
-- **MetaMask**: Installed browser extension
-- **Infura Project**: API key for accessing the Linea network
+Usage
+	1.	Connect Wallet (e.g., MetaMask).
+	2.	Deposit ETH: Specify an amount, submit the transaction to the Bridge Proxy.
+	3.	Wait for Confirmation: The canonical messaging service relays deposit info to Linea; ETH is minted or released on Linea.
+	4.	Withdraw/Claim: (If supported) Reverses the flow, burning or unlocking tokens on Linea, then returning ETH on Ethereum.
 
-## Setup and Installation
+Development & Testing
+	•	Hardhat Commands
+	•	npx hardhat help
+	•	npx hardhat test (run contract tests)
+	•	npx hardhat node (spin up a local node)
+	•	npx hardhat run scripts/deploy.js --network <network> (example deploy script)
+	•	Upgrades
+	•	If using an upgradeable proxy approach, run your custom upgrade scripts (e.g., upgradeProxy.js) to point the proxy at a new implementation contract without changing the proxy address.
 
-1. Clone the repository:
-   ```bash
-   git clone git@github.com:Othryades/eth-linea-bridge.git
-   cd eth-linea-bridge
+License
 
+This project is released under the MIT License. Feel free to modify and distribute under these terms.
 
-# Sample Hardhat Project
-
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat ignition deploy ./ignition/modules/Lock.js
-```
+For questions or issues, please open a GitHub Issue in this repository. We welcome contributions!
