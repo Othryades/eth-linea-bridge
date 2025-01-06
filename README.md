@@ -1,7 +1,6 @@
 # ETH–Linea Bridge DApp
 
-This repository contains a **decentralized application (DApp)** and an accompanying **L1Bridge** smart contract that allow users to **bridge ETH** from Ethereum (L1) to the **Linea** network (L2). Unlike a typical “proxy” pattern, this contract specifically **escrows user funds** and interacts with the **Linea canonical messaging service**, which handles cross-chain validation and finalization.
-
+A decentralized application (DApp) along with an L1 and L2 Bridge smart contracts that enables users to transfer ETH from Ethereum (L1) to the Linea network (L2). Rather than functioning as a typical “proxy”, this contract specifically escrows user funds and interacts with the Linea canonical messaging service, which handles cross-chain validation and finalization."
 ---
 
 ## Overview
