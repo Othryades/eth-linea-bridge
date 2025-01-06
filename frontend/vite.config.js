@@ -1,7 +1,18 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import path from 'path';
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
-})
+  plugins: [
+    nodePolyfills({
+      // Ensure correct resolution of the buffer shim
+      buffer: true,
+    }),
+  ],
+  resolve: {
+    alias: {
+      // Use the absolute path for the buffer shim
+      'buffer/': path.resolve(__dirname, 'node_modules/vite-plugin-node-polyfills/shims/buffer'),
+    },
+  },
+});

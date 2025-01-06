@@ -1,3 +1,4 @@
+import React from 'react';
 import { useAccount, useBalance } from 'wagmi';
 
 function WalletInfo() {
