@@ -6,13 +6,19 @@ A **decentralized application (DApp)** along with an L1 and L2 Bridge smart cont
 
 ## Overview
 
-1. **L1Bridge Contract**  
+1. **L1Bridge Contract (on L1)**  
    - **Purpose**: Holds (escrows) the deposited ETH on L1 and sends cross-chain messages via the **Linea L1 Message Service**.  
    - **Key Functions**:  
      - `deposit(address recipient)`: Accepts ETH and calls the message service to relay bridging info to Linea.  
      - `withdraw(address payable recipient, uint256 amount)`: Releases ETH **only** if called by the trusted Linea message service, enabling reverse withdrawals from L2.  
 
-2. **Linea Canonical Messaging Service**  
+2. **Bridge Contract (on Linea, L2)**  
+   - **Purpose**: Receives and holds ETH on L2, logging deposits and enabling authorized withdrawals.  
+   - **Key Functions**:  
+      - `deposit(uint256 chainId)`: Accepts ETH on L2 and emits a `Deposit` event. (No immediate cross-chain call here; typically, an external service or off-chain logic uses this event to track bridging state.)  
+      - `withdraw(address payable to, uint256 amount)`: Can only be called by the `messageService` (authorized from L1), releasing ETH on L2.  
+
+3. **Linea Canonical Messaging Service**  
    - Operated by the **Linea** team for secure cross-chain communication.  
    - Receives a deposit event from `L1Bridge`, confirms it on L2, and may later call `withdraw` on L1 to release ETH back to a user.
 
@@ -22,17 +28,26 @@ By leveraging the official **Linea** messaging infrastructure, users can take ad
 
 ## Bridging Flow (High-Level)
 
-1. **Deposit**  
-   - User calls `deposit(recipient)` on the **L1Bridge** contract and sends some ETH.  
-   - The `L1Bridge` contract holds that ETH in its own balance.  
-   - In the same transaction, `L1Bridge` calls `sendMessage` on the **Linea L1 Message Service**, instructing it to process a deposit for `recipient` on L2.
+1. **L1 Deposit**  
+   - User calls `deposit(recipient)` on `L1Bridge` (Ethereum) with some ETH.  
+   - `L1Bridge` locks that ETH, emits a `Deposit` event on L1, and calls `sendMessage` on the Linea message service.  
 
-2. **Linea (L2) Receives Deposit**  
-   - The **Linea** service detects the deposit info and mints or credits an equivalent amount of ETH (or wrapped ETH) to `recipient` on L2 (behind the scenes).  
+2. **ETH Reflected on L2**  
+   - The Linea service verifies the deposit and triggers logic on L2 (inside the official or custom bridging flow) to credit or mint the corresponding ETH for `recipient`.  
+   - If you are using your own L2 `Bridge` contract for advanced logic, you might rely on an off-chain or on-chain mechanism to finalize the deposit.  
 
-3. **Withdraw (L2 -> L1)**  
-   - When a user withdraws from L2, the **Linea** message service eventually calls `withdraw(recipient, amount)` on the **L1Bridge**—**only** the message service can do this.  
-   - The `L1Bridge` verifies the caller is indeed the message service, then transfers the specified ETH back to the user’s address on L1.
+3. **L2 Deposit** (In Your L2 `Bridge` Contract)  
+   - Alternatively, a user might deposit ETH directly on L2 by calling `deposit(uint256 chainId)` in your `Bridge` contract.  
+   - This emits a `Deposit` event on L2, which an external service or bridging flow can reference for cross-chain operations.
+
+4. **Withdraw (L2 -> L1)**  
+   - A user on Linea decides to withdraw their L2 ETH.  
+   - After the canonical service processes the request, it calls `withdraw(recipient, amount)` on `L1Bridge`—**only** the legitimate `messageService` can do this.  
+   - `L1Bridge` then transfers the specified ETH back to the user’s address on Ethereum.  
+
+5. **Withdraw on L2** (Using `Bridge.sol`)  
+   - If there’s a scenario where funds need to be released on L2 (e.g., after bridging from another chain or from L1 back down to L2), your `Bridge` contract’s `withdraw(to, amount)` is similarly restricted to calls from the L2 `messageService` address.
+
 
 ---
 
