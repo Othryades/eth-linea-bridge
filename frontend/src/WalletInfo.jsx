@@ -13,12 +13,7 @@ function WalletInfo() {
 
   return (
     <div style={{ marginTop: '20px' }}>
-      <p><strong>Connected Wallet:</strong> {address}</p>
-      {isLoading ? (
-        <p>Fetching balance...</p>
-      ) : (
-        <p><strong>Balance:</strong> {balance?.formatted} {balance?.symbol}</p>
-      )}
+
     </div>
   );
 }
