@@ -6,6 +6,7 @@ function MessageStatus({ txHash }) {
   const [messageHash, setMessageHash] = useState(null);
   const [error, setError] = useState(null);
   const [l2TxHash, setL2TxHash] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (txHash) {
@@ -22,53 +23,16 @@ function MessageStatus({ txHash }) {
       const l1Provider = new ethers.providers.JsonRpcProvider(`https://sepolia.infura.io/v3/${INFURA_API_KEY}`);
       const l2Provider = new ethers.providers.JsonRpcProvider(`https://linea-sepolia.infura.io/v3/${INFURA_API_KEY}`);
 
-    // const fetchL1Logs = async () => {
-    //     try {
-    //       setStatus("Fetching logs from L1...");
-      
-    //       const logs = await l1Provider.getLogs({
-    //         address: L1_CONTRACT_ADDRESS,
-    //         fromBlock: 7447912, // Adjust block range based on your L1 transaction block
-    //         toBlock: 7447916,
-    //       });
-      
-    //       if (logs.length === 0) {
-    //         setStatus("No logs found in the specified block range.");
-    //         return;
-    //       }
-      
-    //       console.log("Fetched Logs:", logs);
-      
-    //       // Find the log that matches the transaction hash
-    //       const matchingLog = logs.find((log) => log.transactionHash === txHash);
-      
-    //       if (matchingLog) {
-    //         console.log("Matching Log Found:", matchingLog);
-      
-    //         // Extract the message hash from the log
-    //         const msgHash = matchingLog.topics[3]; // Adjust based on your event topics
-    //         setMessageHash(msgHash);
-    //         setStatus("Message sent on L1. Checking L2...");
-    //         return msgHash;
-    //       } else {
-    //         setStatus("No matching logs found for the transaction hash.");
-    //       }
-    //     } catch (err) {
-    //       setError("Error fetching L1 logs.");
-    //       console.error("Error in fetchL1Logs:", err);
-    //     }
-    //   };
-    
-
       const fetchL1Logs = async () => {
         try {
+          setIsLoading(true);
           setStatus("Fetching logs from L1...");
           
           // Fetch the L1 transaction receipt
           const txReceipt = await l1Provider.getTransactionReceipt(txHash);
           if (!txReceipt) {
-            setStatus("Transaction receipt not found.");
-            console.log("Transaction receipt not found for hash:", txHash);
+            setStatus("Transaction receipt not found. Please verify the transaction hash.");
+            setIsLoading(false);
             return;
           }
       
@@ -83,8 +47,8 @@ function MessageStatus({ txHash }) {
           });
       
           if (logs.length === 0) {
-            setStatus("No logs found in the specified block range.");
-            console.log("Raw Logs: None");
+            setStatus("No logs found for this bridge transaction. Ensure this is a valid bridge transaction.");
+            setIsLoading(false);
             return;
           }
       
@@ -96,82 +60,20 @@ function MessageStatus({ txHash }) {
             console.log("Matching Log Found:", log);
             const msgHash = log.topics[3]; // Adjust based on your event structure
             setMessageHash(msgHash);
-            setStatus("Message sent on L1. Checking L2...");
+            setStatus("Message sent on L1. Checking L2 status...");
             return msgHash;
           } else {
-            setStatus("No matching logs found for the transaction hash.");
+            setStatus("No matching bridge transaction found for this hash.");
+            setIsLoading(false);
           }
         } catch (err) {
-          setError("Error fetching L1 logs.");
+          setError("Error fetching L1 logs: " + (err.message || "Unknown error"));
           console.error("Error in fetchL1Logs:", err);
+          setIsLoading(false);
         }
       };
-
-    //   const fetchL2Logs = async (msgHash) => {
-    //     try {
-    //       const messageClaimedEvent = ethers.utils.id("MessageClaimed(bytes32)");
-
-    //       const logs = await l2Provider.getLogs({
-    //         address: L2_CONTRACT_ADDRESS,
-    //         topics: [
-    //           messageClaimedEvent, // Event signature for MessageClaimed
-    //           msgHash, // Indexed parameter (message hash)
-    //         ],
-    //         fromBlock: 7863700, // Adjust based on your L2 block
-    //         toBlock: "latest",
-    //       });
-
-    //       if (logs.length > 0) {
-    //         const l2Tx = logs[0].transactionHash;
-    //         setL2TxHash(l2Tx);
-    //         setStatus("Message successfully claimed on L2!");
-    //       } else {
-    //         setStatus("Message not yet claimed on L2.");
-    //       }
-    //     } catch (err) {
-    //       setError("Error fetching L2 logs.");
-    //       console.error(err);
-    //     }
-    //   };
-
-      
-    // const fetchL2Logs = async (msgHash) => {
-    //     try {
-    //       const messageClaimedEvent = ethers.utils.id("MessageClaimed(bytes32)");
-      
-    //       // Fetch the latest block number on L2
-    //       const latestBlockL2 = await l2Provider.getBlockNumber();
-      
-    //       // Set a dynamic range: look back 5000 blocks from the latest block
-    //       const fromBlock = Math.max(latestBlockL2 - 5000, 0); // Ensures we don't go below 0
-    //       const toBlock = "latest";
-      
-    //       console.log(`Fetching logs on L2 from block ${fromBlock} to ${toBlock}...`);
-      
-    //       const logs = await l2Provider.getLogs({
-    //         address: L2_CONTRACT_ADDRESS,
-    //         topics: [
-    //           messageClaimedEvent, // Event signature for MessageClaimed
-    //           msgHash, // Indexed parameter (message hash)
-    //         ],
-    //         fromBlock,
-    //         toBlock,
-    //       });
-      
-    //       if (logs.length > 0) {
-    //         const l2Tx = logs[0].transactionHash;
-    //         setL2TxHash(l2Tx);
-    //         setStatus("Message successfully claimed on L2!");
-    //       } else {
-    //         setStatus("Message not yet claimed on L2.");
-    //       }
-    //     } catch (err) {
-    //       setError("Error fetching L2 logs.");
-    //       console.error(err);
-    //     }
-    //   };
     
-    const fetchL2Logs = async (msgHash) => {
+      const fetchL2Logs = async (msgHash) => {
         try {
           const messageClaimedEvent = ethers.utils.id("MessageClaimed(bytes32)");
       
@@ -179,12 +81,14 @@ function MessageStatus({ txHash }) {
           const l1TxReceipt = await l1Provider.getTransactionReceipt(txHash);
           if (!l1TxReceipt) {
             setStatus("L1 Transaction not found.");
+            setIsLoading(false);
             return;
           }
       
           const l1Block = await l1Provider.getBlock(l1TxReceipt.blockNumber);
           if (!l1Block) {
             setStatus("L1 Block not found.");
+            setIsLoading(false);
             return;
           }
       
@@ -220,15 +124,17 @@ function MessageStatus({ txHash }) {
             setL2TxHash(l2Tx);
             setStatus("Message successfully claimed on L2!");
           } else {
-            setStatus("Message not yet claimed on L2.");
+            setStatus("Message not yet claimed on L2. The transfer is still in progress.");
           }
+          setIsLoading(false);
         } catch (err) {
-          setError("Error fetching L2 logs.");
+          setError("Error fetching L2 logs: " + (err.message || "Unknown error"));
           console.error(err);
+          setIsLoading(false);
         }
       };
 
-    const checkMessageStatus = async () => {
+      const checkMessageStatus = async () => {
         const msgHash = await fetchL1Logs();
         if (msgHash) {
           await fetchL2Logs(msgHash);
@@ -240,16 +146,79 @@ function MessageStatus({ txHash }) {
   }, [txHash]);
 
   if (error) {
-    return <p>{error}</p>;
+    return (
+      <div className="status-error">
+        <div style={{ color: 'var(--error)', marginBottom: '0.5rem' }}>Error</div>
+        <p>{error}</p>
+      </div>
+    );
   }
+
+  const getStatusIcon = () => {
+    if (isLoading) {
+      return <div className="status-loading"></div>;
+    }
+    if (l2TxHash) {
+      return <div className="status-complete">✓</div>;
+    }
+    if (messageHash) {
+      return <div className="status-pending">⏱</div>;
+    }
+    return null;
+  };
+
+  const shortenHash = (hash) => {
+    if (!hash) return '';
+    return `${hash.slice(0, 10)}...${hash.slice(-8)}`;
+  };
 
   return (
     <div>
-      <h3>Message Status</h3>
-      <p><strong>L1 Transaction Hash:</strong> {txHash}</p>
-      <p><strong>Status:</strong> {status}</p>
-      {messageHash && <p><strong>Message Hash:</strong> {messageHash}</p>}
-      {l2TxHash && <p><strong>L2 Transaction Hash:</strong> {l2TxHash}</p>}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+        {getStatusIcon()}
+        <div style={{ fontWeight: '500' }}>{status}</div>
+      </div>
+      
+      {txHash && (
+        <div style={{ marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+          <span style={{ color: 'var(--text-secondary)' }}>L1 Tx: </span>
+          <a 
+            href={`https://sepolia.etherscan.io/tx/${txHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'var(--primary)', textDecoration: 'none' }}
+          >
+            {shortenHash(txHash)}
+          </a>
+        </div>
+      )}
+      
+      {messageHash && (
+        <div style={{ marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+          <span style={{ color: 'var(--text-secondary)' }}>Message Hash: </span>
+          <span style={{ wordBreak: 'break-all' }}>{shortenHash(messageHash)}</span>
+        </div>
+      )}
+      
+      {l2TxHash && (
+        <div style={{ marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+          <span style={{ color: 'var(--text-secondary)' }}>L2 Tx: </span>
+          <a 
+            href={`https://sepolia.lineascan.build/tx/${l2TxHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'var(--success)', textDecoration: 'none' }}
+          >
+            {shortenHash(l2TxHash)}
+          </a>
+        </div>
+      )}
+      
+      {isLoading && (
+        <div style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+          Checking message status. This may take a few moments...
+        </div>
+      )}
     </div>
   );
 }

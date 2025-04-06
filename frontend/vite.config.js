@@ -15,4 +15,7 @@ export default defineConfig({
       'buffer/': path.resolve(__dirname, 'node_modules/vite-plugin-node-polyfills/shims/buffer'),
     },
   },
+  server: {
+    port: 4401, // Replace 3001 with your desired port number
+  },
 });

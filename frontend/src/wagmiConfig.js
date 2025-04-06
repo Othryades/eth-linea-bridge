@@ -1,43 +1,57 @@
-import { configureChains, createClient } from "wagmi";
-import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { createConfig } from "wagmi";
+import { defineChain, http } from "viem";
+import { sepolia } from "viem/chains";
 
-// Ensure you're using the correct API key for your testnet environment
-const INFURA_API_KEY = import.meta.env.VITE_INFURA_API_KEY;
+// Get Infura API key from environment or use a fallback
+const INFURA_API_KEY = import.meta.env.VITE_INFURA_API_KEY || "9aa3d95b3bc440fa88ea12eaa4456161"; // fallback to public key
 
-const lineaTestnet = {
-  id: 59141, // Linea Testnet (Sepolia) chain ID
-  name: "Linea Testnet",
-  network: "linea",
+// Define Linea Sepolia chain
+const lineaSepolia = defineChain({
+  id: 59141,
+  name: 'Linea Sepolia',
+  network: 'linea-sepolia',
   nativeCurrency: {
-    name: "Ethereum",
-    symbol: "ETH",
     decimals: 18,
+    name: 'Ether',
+    symbol: 'ETH',
   },
   rpcUrls: {
-    default: `https://linea-sepolia.infura.io/v3/${INFURA_API_KEY}`, // Correct RPC URL for Linea Testnet
+    default: {
+      http: [`https://linea-sepolia.infura.io/v3/${INFURA_API_KEY}`],
+    },
+    public: {
+      http: [`https://linea-sepolia.infura.io/v3/${INFURA_API_KEY}`],
+    },
   },
   blockExplorers: {
-    default: { name: "Lineascan", url: "https://testnet.lineascan.build" },
+    default: {
+      name: 'Lineascan',
+      url: 'https://sepolia.lineascan.build',
+    },
+  },
+  testnet: true,
+});
+
+// Override Sepolia RPC URL
+const customSepolia = {
+  ...sepolia,
+  rpcUrls: {
+    ...sepolia.rpcUrls,
+    default: {
+      http: [`https://sepolia.infura.io/v3/${INFURA_API_KEY}`],
+    },
+    public: {
+      http: [`https://sepolia.infura.io/v3/${INFURA_API_KEY}`],
+    },
   },
 };
 
-// Use jsonRpcProvider to ensure the RPC setup is compatible
-const { chains, provider } = configureChains(
-  [lineaTestnet], // Make sure it's using the Testnet configuration
-  [
-    jsonRpcProvider({
-      rpc: (chain) =>
-        chain.id === lineaTestnet.id
-          ? { http: `https://linea-sepolia.infura.io/v3/${INFURA_API_KEY}` } // Correct Testnet RPC URL
-          : null,
-    }),
-  ]
-);
-
-// Create Wagmi client for Testnet
-export const config = createClient({
-  autoConnect: true,
-  provider,
+// Create Wagmi config for Testnet using v2 syntax
+export const config = createConfig({
+  chains: [customSepolia, lineaSepolia],
+  transports: {
+    [customSepolia.id]: http(`https://sepolia.infura.io/v3/${INFURA_API_KEY}`),
+    [lineaSepolia.id]: http(`https://linea-sepolia.infura.io/v3/${INFURA_API_KEY}`),
+  },
+  ssr: true,
 });
-
-export { chains };

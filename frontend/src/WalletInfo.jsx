@@ -8,7 +8,7 @@ function WalletInfo() {
   });
 
   if (!isConnected) {
-    return <p>Please connect your wallet.</p>;
+    return null; // Don't display any message, it's already shown in the parent component
   }
 
   return (

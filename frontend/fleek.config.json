@@ -1,7 +1,7 @@
 {
   "sites": [
     {
-      "slug": "modern-area-incalculable",
+      "slug": "rhythmic-daybreak-square",
       "distDir": "dist",
       "buildCommand": "npm run build"
     }
