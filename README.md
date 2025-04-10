@@ -1,4 +1,4 @@
-# ETH–Linea Bridge DApp
+# WormGate
 
 A **decentralized application (DApp)** along with an L1 and L2 Bridge smart contracts that allow users to **bridge** (or **transfer**) **ETH** from Ethereum (L1) to the **Linea** network (L2). This contract specifically **escrows user funds** and interacts with the Linea canonical messaging service, which handles cross-chain validation and finalization.
 
@@ -28,26 +28,37 @@ By leveraging the official **Linea** messaging infrastructure, users can take ad
 
 ## Bridging Flow (High-Level)
 
-1. **L1 Deposit**  
-   - User calls `deposit(recipient)` on `L1Bridge` (Ethereum) with some ETH.  
-   - `L1Bridge` locks that ETH, emits a `Deposit` event on L1, and calls `sendMessage` on the Linea message service.  
+### Ethereum Sepolia → Linea Sepolia
+1. **Connect & Prepare**
+   - Connect your wallet to Ethereum Sepolia network
+   - Ensure you have enough ETH for transfer and gas fees
+   - The app will automatically detect the correct network
 
-2. **ETH Reflected on L2**  
-   - The Linea service verifies the deposit and triggers logic on L2 (inside the official or custom bridging flow) to credit or mint the corresponding ETH for `recipient`.  
-   - If you are using your own L2 `Bridge` contract for advanced logic, you might rely on an off-chain or on-chain mechanism to finalize the deposit.  
+2. **Initiate Bridge Transfer**
+   - Enter the amount of ETH you want to bridge
+   - Specify recipient address (defaults to your address)
+   - Confirm the transaction in your wallet
+   - Transaction will be processed on Ethereum Sepolia
 
-3. **L2 Deposit** (In Your L2 `Bridge` Contract)  
-   - Alternatively, a user might deposit ETH directly on L2 by calling `deposit(uint256 chainId)` in your `Bridge` contract.  
-   - This emits a `Deposit` event on L2, which an external service or bridging flow can reference for cross-chain operations.
+3. **Track Progress**
+   - Bridge transaction will be visible in the History tab
+   - Status updates automatically as transfer progresses
+   - Typical completion time: 5-10 minutes
+   - ETH will appear in your Linea Sepolia wallet
 
-4. **Withdraw (L2 -> L1)**  
-   - A user on Linea decides to withdraw their L2 ETH.  
-   - After the canonical service processes the request, it calls `withdraw(recipient, amount)` on `L1Bridge`—**only** the legitimate `messageService` can do this.  
-   - `L1Bridge` then transfers the specified ETH back to the user’s address on Ethereum.  
+### Linea Sepolia → Ethereum Sepolia
+1. **Switch Network**
+   - Switch your wallet to Linea Sepolia
+   - App will prompt network switch if needed
+   - Ensure you have enough ETH for gas
 
-5. **Withdraw on L2** (Using `Bridge.sol`)  
-   - If there’s a scenario where funds need to be released on L2 (e.g., after bridging from another chain or from L1 back down to L2), your `Bridge` contract’s `withdraw(to, amount)` is similarly restricted to calls from the L2 `messageService` address.
+2. **Withdraw Process**
+   - Enter the amount to bridge back
+   - Confirm the transaction
+   - Monitor status in the History tab
+   - Typical completion time: 30-60 minutes
 
+Note: All bridge operations use Linea's official messaging service for secure cross-chain transfers. Transaction times may vary based on network conditions.
 
 ---
 

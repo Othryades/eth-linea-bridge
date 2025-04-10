@@ -248,13 +248,11 @@ function App() {
       <div className="app-content">
         <header className="app-header">
           <div className="header-container">
-            <div className="eth-logo">
-              <img src="/eth.svg" alt="ETH" />
-              <img src="/linea2.png" alt="Linea" />
-            </div>
             <div className="title-container">
-              <h1 className="app-title">WormGate</h1>
-              <h2 className="app-subtitle">Ethereum
+              <h1 className="app-title"><div>WormGate</div><div><img src="/wormhole.webp" alt="Linea" width="45" /></div></h1>
+              <h2 className="app-subtitle"><div className="eth-logo">
+              <img src="/eth.svg" alt="ETH" />
+            </div>Ethereum
                 <svg width="24" height="24" viewBox="0 0 24 24" style={{
                   verticalAlign: 'middle', 
                   margin: '0 8px',
@@ -272,11 +270,14 @@ function App() {
                     </linearGradient>
                   </defs>
                 </svg> 
-                Linea Bridge
+                Linea
+                 <div className="linea-logo">
+              <img src="/linea-sepolia.svg" alt="Linea" />
+            </div>
               </h2>
             </div>
           </div>
-          <p className="app-description">Transfer your assets securely between Ethereum and Linea networks. 100% free, 100% Decentralized.</p>
+          <p className="app-description">Transfer your assets securely between Ethereum Sepolia and Linea Sepolia networks. 100% free, 100% Decentralized.</p>
         </header>
         <main className="app-main">
           <div className="card">
