@@ -1,6 +1,6 @@
 # WormGate
 
-A **decentralized application (DApp)** along with an L1 and L2 Bridge smart contracts that allow users to **bridge** (or **transfer**) **ETH** from Ethereum (L1) to the **Linea** network (L2). This contract specifically **escrows user funds** and interacts with the Linea canonical messaging service, which handles cross-chain validation and finalization. Hosted on IPFS @ https://rhythmic-daybreak-square.on-fleek.app/
+A **decentralized application (DApp)** along with an L1 and L2 Bridge smart contracts that allow users to **bridge** (or **transfer**) **ETH** from Ethereum (L1) to the **Linea** network (L2). This contract specifically **escrows user funds** and interacts with the Linea canonical messaging service, which handles cross-chain validation and finalization. Hosted on IPFS @ https://wormgate.on-fleek.app/
 
 ---
 

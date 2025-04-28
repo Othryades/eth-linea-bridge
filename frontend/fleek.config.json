@@ -1,7 +1,7 @@
 {
   "sites": [
     {
-      "slug": "rhythmic-daybreak-square",
+      "slug": "wormgate",
       "distDir": "dist",
       "buildCommand": "npm run build"
     }
