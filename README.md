@@ -1,6 +1,6 @@
 # WormGate
 
-A **decentralized application (DApp)** along with an L1 and L2 Bridge smart contracts that allow users to **bridge** (or **transfer**) **ETH** from Ethereum (L1) to the **Linea** network (L2). This contract specifically **escrows user funds** and interacts with the Linea canonical messaging service, which handles cross-chain validation and finalization. Hosted on IPFS @ [wormgate.netlify.app](https://wormgate.netlify.app/).
+A **decentralized application (DApp)** along with an L1 and L2 Bridge smart contracts that allow users to **bridge** (or **transfer**) **ETH** from Ethereum (L1) to the **Linea** network (L2). This contract specifically **escrows user funds** and interacts with the Linea canonical messaging service, which handles cross-chain validation and finalization. Hosted @ [wormgate.netlify.app](https://wormgate.netlify.app/).
 
 ---
 
@@ -89,7 +89,7 @@ Note: All bridge operations use Linea's official messaging service for secure cr
 
 ## Usage
 
-1.	Connect Wallet (e.g., MetaMask).
+1.	Connect Wallet (MetaMask).
 2.	Deposit ETH: Specify an amount, submit the transaction to the Bridge Proxy.
 3.	Wait for Confirmation: The canonical messaging service relays deposit info to Linea; ETH is minted or released on Linea.
 4.	Withdraw/Claim: (If supported) Reverses the flow, burning or unlocking tokens on Linea, then returning ETH on Ethereum.
