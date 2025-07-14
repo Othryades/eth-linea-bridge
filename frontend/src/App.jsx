@@ -12,6 +12,7 @@ function App() {
   const { switchChain, isPending: isSwitchingChain } = useSwitchChain();
   const [formattedBalance, setFormattedBalance] = useState("Not available");
   const [isBalanceLoading, setIsBalanceLoading] = useState(false);
+  const [isAppLoading, setIsAppLoading] = useState(true);
 
   // Function to get balance directly using ethers
   const getBalance = async () => {
@@ -30,6 +31,15 @@ function App() {
       setIsBalanceLoading(false);
     }
   };
+
+  // Initial app loading effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsAppLoading(false);
+    }, 2500); // 2.5 seconds loading
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Update balance when address or chainId changes
   useEffect(() => {
@@ -243,6 +253,112 @@ function App() {
     return `${str.slice(0, start)}...${str.slice(-end)}`;
   };
 
+  // Loading screen component
+  if (isAppLoading) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 9999,
+        animation: 'fadeOut 0.5s ease-out 2s forwards'
+      }}>
+        <style>
+          {`
+            @keyframes fadeOut {
+              to {
+                opacity: 0;
+                visibility: hidden;
+              }
+            }
+            @keyframes pulse {
+              0%, 100% { opacity: 0.8; transform: scale(1); }
+              50% { opacity: 1; transform: scale(1.05); }
+            }
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+            @keyframes glow {
+              0%, 100% { box-shadow: 0 0 20px rgba(97, 25, 239, 0.3); }
+              50% { box-shadow: 0 0 40px rgba(97, 25, 239, 0.6), 0 0 60px rgba(97, 25, 239, 0.4); }
+            }
+          `}
+        </style>
+        
+        {/* Logo */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem',
+          marginBottom: '2rem',
+          animation: 'pulse 2s ease-in-out infinite'
+        }}>
+          <h1 style={{
+            fontSize: '2.5rem',
+            fontWeight: '700',
+            background: 'linear-gradient(135deg, #6119ef 0%, #10b981 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            margin: 0
+          }}>
+            WormGate
+          </h1>
+          <img src="/wormhole.webp" alt="WormGate" width="50" style={{
+            animation: 'spin 3s linear infinite'
+          }} />
+        </div>
+
+        {/* Loading spinner */}
+        <div style={{
+          width: '60px',
+          height: '60px',
+          border: '3px solid rgba(97, 25, 239, 0.2)',
+          borderTop: '3px solid #6119ef',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite, glow 2s ease-in-out infinite',
+          marginBottom: '1rem'
+        }}></div>
+
+        {/* Loading text */}
+        <p style={{
+          color: 'rgba(255, 255, 255, 0.8)',
+          fontSize: '1.1rem',
+          fontWeight: '500',
+          margin: '0 0 0.5rem 0',
+          animation: 'pulse 1.5s ease-in-out infinite'
+        }}>
+          Initializing Bridge...
+        </p>
+        
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem',
+          color: 'rgba(255, 255, 255, 0.6)',
+          fontSize: '0.9rem'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <img src="/eth.svg" alt="ETH" width="16" />
+            <span>Ethereum</span>
+          </div>
+          <span>↔</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <img src="/linea-sepolia.svg" alt="Linea" width="16" />
+            <span>Linea</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="app">
       <div className="app-content">
@@ -277,7 +393,7 @@ function App() {
               </h2>
             </div>
           </div>
-          <p className="app-description">Transfer your assets securely between Ethereum Sepolia and Linea Sepolia networks. 100% free, 100% Decentralized.</p>
+          <p className="app-description">Transfer your assets securely between Ethereum Sepolia and Linea Sepolia networks.</p>
         </header>
         <main className="app-main">
           <div className="card">
@@ -681,10 +797,8 @@ function App() {
               <path fillRule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
             </svg>
           </a>
-          <a href="https://ipfs.tech" target="_blank" rel="noopener noreferrer" className="ipfs-link">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 512 512" fill="currentColor" className="ipfs-icon">
-              <path d="M255.928 109.521L129.307 185.825L255.928 262.133L382.549 185.825L255.928 109.521ZM93.618 165.088L93.618 317.349L220.238 393.658L220.238 241.396L93.618 165.088ZM291.616 241.393L291.616 393.658L418.237 317.349L418.237 165.088L291.616 241.393ZM22.464 127.42L22.464 384.718L84.446 422.63L84.446 165.333L22.464 127.42ZM427.41 165.333L427.41 422.63L489.391 384.718L489.391 127.42L427.41 165.333ZM255.928 21.208L93.281 116.256L129.307 137.337L255.928 61.03L382.549 137.337L418.576 116.256L255.928 21.208ZM220.238 442.998L93.281 366.578L57.251 387.659L255.928 498.388L454.604 387.657L418.576 366.576L291.616 442.998L291.616 298.088L255.928 318.909L220.238 298.088L220.238 442.998Z" />
-            </svg>
+          <a href="https://ethereum.org/en/" target="_blank" rel="noopener noreferrer" className="ipfs-link">
+            <img src="/ethereum-eth-logo-diamond.svg" style={{ width: '16px', height: '18px' }} alt="Ethereum" />
           </a>
         </p>
       </footer>
